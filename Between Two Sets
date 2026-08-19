@@ -1,0 +1,52 @@
+
+#include <stdio.h>
+
+int gcd(int x, int y) {
+    while (y != 0) {
+        int temp = y;
+        y = x % y;
+        x = temp;
+    }
+    return x;
+}
+
+int lcm(int x, int y) {
+    return (x / gcd(x, y)) * y;
+}
+
+int main() {
+    int n, m;
+    scanf("%d %d", &n, &m);
+
+    int a[n], b[m];
+
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+    }
+
+    for (int i = 0; i < m; i++) {
+        scanf("%d", &b[i]);
+    }
+
+
+    int l = a[0];
+    for (int i = 1; i < n; i++) {
+        l = lcm(l, a[i]);
+    }
+
+    int g = b[0];
+    for (int i = 1; i < m; i++) {
+        g = gcd(g, b[i]);
+    }
+
+    int count = 0;
+    for (int i = l; i <= g; i += l) {
+        if (g % i == 0) {
+            count++;
+        }
+    }
+
+    printf("%d\n", count);
+
+    return 0;
+}
