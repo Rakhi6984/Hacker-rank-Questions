@@ -1,0 +1,29 @@
+#include<stdio.h>
+int main()
+{
+    int n;
+    scanf("%d", &n);
+    int score;
+    scanf("%d", &score);
+    int best = score;
+    int worst = score;
+    int bestcount = 0;
+    int worstcount = 0;
+    for(int i = 1; i < n; i++)
+    {
+        scanf("%d", &score);
+        if (score > best)
+        {
+            best = score;
+            bestcount++;
+        }
+        if (score < worst)
+        {
+            worst = score;
+            worstcount++;
+        }
+    }
+    printf("%d %d\n", bestcount, worstcount);
+    return 0;
+    
+}
