@@ -1,0 +1,26 @@
+#include<stdio.h>
+int main()
+{
+    int n, k;
+    scanf("%d %d", &n, &k);
+    int bill[n];
+    int sum = 0;
+    for (int i = 0; i < n; i++)
+    {
+        scanf("%d", &bill[i]);
+        sum += bill[i];
+    }
+    int b;
+    scanf("%d", &b);
+    sum -= bill[k];
+    int anna_share = sum/2;
+    if (anna_share ==b)
+    {
+        printf("Bon Appetit\n");
+    }
+    else 
+    {
+    printf("%d\n", b - anna_share);
+    }
+    return 0;
+}
