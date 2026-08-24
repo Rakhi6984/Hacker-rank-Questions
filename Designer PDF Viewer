@@ -1,0 +1,27 @@
+#include<stdio.h>
+#include<string.h>
+int designerpdfviewer(int h_count,int*h,char*word)
+{
+    int maxheight=0;
+    for(int i=0;word[i]!='\0';i++)
+    {
+        int index=word[i]-'a';
+        if(h[index]>maxheight)
+        {
+        maxheight=h[index];
+        }
+    }
+    return maxheight*strlen(word);
+}
+int main()
+{
+    int h[26];
+    char word[100];
+    for(int i=0;i<26;i++)
+    {
+        scanf("%d",&h[i]);
+    }
+    scanf("%s",word);
+    printf("%d",designerpdfviewer(26,h,word));
+    return 0;
+}
