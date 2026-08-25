@@ -1,0 +1,15 @@
+#include<stdio.h>
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    int shared=5;
+    int total=0;
+    for(int day=1;day<=n;day++)
+    {
+        int liked=shared/2;total+=liked;
+        shared=liked*3;
+    }
+    printf("%d\n",total);
+    return 0;
+}
