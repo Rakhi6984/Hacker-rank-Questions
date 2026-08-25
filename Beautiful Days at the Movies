@@ -1,0 +1,28 @@
+#include<stdio.h>
+#include<stdlib.h>
+int reversenumber(int n)
+{
+    int rev=0;
+    while(n>0)
+    {
+        rev=rev*10+n%10;
+        n/=10;
+    }
+    return rev;
+}
+int main()
+{
+    int i,j,k;
+    scanf("%d%d%d",&i,&j,&k);
+    int count =0;
+    for(int day=i;day<=j;day++)
+    {
+        int rev=reversenumber(day);
+        if(abs(day-rev)%k==0)
+        {
+            count++;
+        }
+    }
+    printf("%d\n",count);
+    return 0;
+}
