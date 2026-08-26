@@ -1,0 +1,24 @@
+#include<stdio.h>
+int main()
+{
+    int n,k,q;
+    scanf("%d%d%d",&n,&k,&q);
+    int a[n];
+    int rotated[n];
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&a[i]);
+    }
+    k=k%n;
+    for(int i=0;i<n;i++)
+    {
+        rotated[(i+k)%n]=a[i];
+    }
+    for(int i=0;i<q;i++)
+    {
+        int index;
+        scanf("%d",&index);
+        printf("%d\n",rotated[index]);
+    }
+    return 0;
+}
