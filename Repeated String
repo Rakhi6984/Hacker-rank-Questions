@@ -1,0 +1,25 @@
+#include<stdio.h>
+#include<string.h>
+int main()
+{
+    char s[100];
+    long long n;
+    long long count=0;
+    scanf("%s",s);
+    scanf("%lld",&n);
+    int len=strlen(s);
+    for(int i=0;i<len;i++)
+    {
+        if(s[i]=='a')
+        count++;
+    }
+    long long result=count*(n/len);
+    for(int i=0;i<n%len;i++)
+    {
+        if(s[i]=='a')
+        result++;
+
+    }
+    printf("%lld",result);
+    return 0;
+}
