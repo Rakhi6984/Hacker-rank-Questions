@@ -1,0 +1,47 @@
+#include<stdio.h>
+int nondivisibleSubset(int n,int k,int s[])
+{
+    int rem[k];
+    for(int i=0;i<k;i++)
+    {
+        rem[i]=0;
+    }
+    for(int i=0;i<n;i++)
+    {
+        rem[s[i]%k]++;
+    }
+    int result=0;
+    if(rem[0]>0)
+    {
+        result++;
+    }
+    for(int r=1;r<=k/2;r++)
+    {
+        if(r==k-r)
+        {
+            if(rem[r]>0)
+            {
+                result++;
+            }
+        }
+        else 
+        {
+            result+=(rem[r]>rem[k-r])
+            ?rem[r]
+            :rem[k-r];
+        }
+    }
+    return result;
+}
+int main()
+{
+    int n,k;
+    scanf("%d%d",&n,&k);
+    int s[n];
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&s[i]);
+    }
+    printf("%d",nondivisibleSubset(n,k,s));
+    return 0;
+}
