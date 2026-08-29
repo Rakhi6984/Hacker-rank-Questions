@@ -1,0 +1,28 @@
+#include<stdio.h>
+int jumpingOnclouds(int c[],int n)
+{
+    int jump=0;
+    int i=0;
+    while(i<n-1)
+    {
+        if(i+2<n && c[i+2]==0)
+        i+=2;
+        else
+         i+=1;
+        jump++;
+    }
+    return jump;
+}    
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    int c[n];
+    int i;
+    for(i=0;i<n;i++)
+    {
+        scanf("%d",&c[i]);
+    }
+    printf("%d\n",jumpingOnclouds(c,n));
+    return 0;
+}    
