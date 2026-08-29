@@ -1,0 +1,58 @@
+#include<stdio.h>
+#include<stdlib.h>
+int queensattack(int n,int k,int rq,int cq,int obstacles[][2])
+{
+    int up=n-rq;
+    int down=rq-1;
+    int right=n-cq;
+    int left=cq-1;
+    int upRight=(n-rq<n-cq)?n-rq:n-cq;
+    int upLeft=(n-rq<cq-1)?n-rq:cq-1;
+    int downRight=(rq-1<n-cq)?rq-1:n-cq;
+    int downLeft=(rq-1<cq-1)?rq-1:cq-1;
+    for(int i=0;i<k;i++)
+    {
+        int r=obstacles[i][0];
+        int c=obstacles[i][1];
+        if(c==cq)
+        {
+            if(r>rq)
+            up=(r-rq-1<up)?r-rq-1:up;
+            else
+        down=(rq-r-1<down)?rq-r-1:down;
+        }
+        else if(r==rq)
+        {
+            if(c>cq)
+            right=(c-cq-1<right)?c-cq-1:right; 
+            else
+            left=(cq-c-1<left)?cq-c-1:left;
+            }
+            else if(abs(r-rq)==abs(c-cq))
+            {
+                if(r>rq && c>cq)
+                upRight=(r-rq-1<upRight)?r-rq-1:upRight;
+                else if(r>rq && c<cq)
+                upLeft=(r-rq-1<upLeft)?r-rq-1:upLeft;
+                else if(r<rq && c>cq)
+                downRight=(rq-r-1<downRight)? rq-r-1:downRight;
+                else if(r<rq && c<cq)
+                    downLeft=(rq-r-1<downLeft)?rq-r-1:downLeft;
+            }          
+    }
+return up+down+right+left+upRight+upLeft+downRight+downLeft;
+}
+int main()
+{
+    int n,k;
+    scanf("%d%d",&n,&k);
+    int r_q,c_q;
+    scanf("%d%d",&r_q,&c_q);
+    int obstacles[k][2];
+    for(int i=0;i<k;i++)
+    {
+        scanf("%d%d",&obstacles[i][0],&obstacles[i][1]);
+    }
+    printf("%d",queensattack(n,k,r_q,c_q,obstacles));
+    return 0;
+}
