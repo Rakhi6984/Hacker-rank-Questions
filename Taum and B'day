@@ -1,0 +1,25 @@
+#include<stdio.h>
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        long long b,w;
+        long long bc,wc,z;
+        scanf("%lld%lld",&b,&w);
+        scanf("%lld%lld%lld",&bc,&wc,&z);
+        long long blackCost,whiteCost;
+        if(bc<wc+z)
+        blackCost=bc;
+        else 
+        blackCost=wc+z;
+        if(wc<bc+z)
+        whiteCost=wc;
+        else 
+        whiteCost=bc+z;
+        long long total=b*blackCost+w*whiteCost;
+        printf("%lld\n",total);
+    }
+    return 0;
+}
