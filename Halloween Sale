@@ -1,0 +1,22 @@
+#include<stdio.h>
+int howManyGames(int p,int d,int m,int s)
+{
+    int count=0;
+    int price=p;
+    while(s>=price)
+    {
+        s=s-price;
+        count++;
+        price=price-d;
+        if(price<m)
+        price=m;
+    }
+    return count;
+}
+int main()
+{
+    int p,d,m,s;
+    scanf("%d%d%d%d",&p,&d,&m,&s);
+    printf("%d",howManyGames(p,d,m,s));
+    return 0;
+}
