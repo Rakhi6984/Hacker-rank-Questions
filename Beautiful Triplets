@@ -1,0 +1,27 @@
+#include<stdio.h>
+int main()
+{
+    int n,d;
+    scanf("%d%d",&n,&d);
+    int arr[n];
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&arr[i]);
+    }
+    int count=0;
+    for(int i=0;i<n;i++)
+    {
+        int found1=0,found2=0;
+        for(int j=0;j<n;j++)
+        {
+            if(arr[j]==arr[i]+d)
+            found1=1;
+            if(arr[j]==arr[i]+2*d)
+            found2=1;
+        }
+        if(found1 && found2)
+        count++;
+    }
+    printf("%d",count);
+    return 0;
+}
