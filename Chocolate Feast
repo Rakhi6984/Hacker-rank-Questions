@@ -1,0 +1,25 @@
+#include<stdio.h>
+int chocolateFeast(int n,int c, int m)
+{
+    int total=n/c;
+    int wrappers=total;
+    while(wrappers>=m)
+    {
+        int free=wrappers/m;
+        total+=free;
+        wrappers=(wrappers%m)+free;
+    }
+    return total;
+}
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+    int n,c,m;
+    scanf("%d%d%d",&n,&c,&m);
+    printf("%d\n",chocolateFeast(n,c,m));
+    }
+    return 0;
+}
