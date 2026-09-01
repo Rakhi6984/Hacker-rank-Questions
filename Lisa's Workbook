@@ -1,0 +1,34 @@
+#include<stdio.h>
+int workbook(int n,int k,int*arr)
+{
+    int page=1;
+    int special=0;
+    for(int i=0;i<n;i++)
+    {
+        int problem=1;
+        while(problem<=arr[i])
+        {
+            int start=problem;
+            int end=problem+ k-1;
+            if(end>arr[i])
+            end=arr[i];
+            if(page>=start && page<=end)
+            special++;
+            page++;
+            problem=end+1;
+        }
+    }
+    return special;
+}
+int main()
+{
+    int n,k;
+    scanf("%d%d",&n,&k);
+    int arr[n];
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&arr[i]);
+    }
+    printf("%d",workbook(n,k,arr));
+    return 0;
+}
