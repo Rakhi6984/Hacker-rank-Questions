@@ -1,0 +1,33 @@
+#include<stdio.h>
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+    int n,a,b;
+    scanf("%d",&n);
+    scanf("%d",&a);
+    scanf("%d",&b);
+    if(a>b)
+    {
+        int temp=a;
+        a=b;
+        b=temp;
+    }
+    if(a==b)
+    {
+        printf("%d\n",(n-1)*a);
+        continue;
+    }
+    for(int i=0;i<n;i++)
+    {
+        int value=(n-1-i)*a+i*b;
+        if(i>0)
+        printf(" ");
+            printf("%d", value);
+        }
+        printf("\n");
+    }
+    return 0;
+}
