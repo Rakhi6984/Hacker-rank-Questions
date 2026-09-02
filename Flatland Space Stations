@@ -1,0 +1,31 @@
+#include<stdio.h>
+#include<stdlib.h>
+int flatlandSpaceStations(int n,int m,int*c)
+{
+    int maxDist=0;
+    for(int i=0;i<n;i++)
+    {
+        int mindist=100000;
+        for(int j=0;j<m;j++)
+        {
+            int dist=abs(i-c[j]);
+            if(dist<mindist)
+            mindist=dist;
+        }
+        if(mindist>maxDist)
+        maxDist=mindist;
+    }
+    return maxDist;
+}
+int main()
+{
+    int n,m;
+    scanf("%d%d",&n,&m);
+    int c[m];
+    for(int i=0;i<m;i++)
+    {
+        scanf("%d",&c[i]);
+    }
+    printf("%d\n",flatlandSpaceStations(n,m,c));
+    return 0;
+}
