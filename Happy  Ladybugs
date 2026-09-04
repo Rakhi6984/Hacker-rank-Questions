@@ -1,0 +1,56 @@
+#include<stdio.h>
+#include<string.h>
+int main()
+{
+    int g;
+    scanf("%d",&g);
+    while(g--)
+    {
+        int n;
+        scanf("%d",&n);
+        char b[n+1];
+        scanf("%s",b);
+        int freq[26]={0};
+        int hasEmpty=0;
+        for(int i=0;i<n;i++)
+        {
+            if(b[i]=='_')
+            {
+            hasEmpty=1;
+            }
+            else 
+            {
+            freq[b[i]-'A']++;
+        }
+        }
+        if(hasEmpty)
+        {
+            int possible=1;
+            for(int i=0;i<26;i++)
+            {
+                if(freq[i]==1)
+                {
+                    possible=0;
+                    break;
+                }
+            }
+            printf(possible? "YES\n":"NO\n");
+        }
+        else 
+        {
+            int happy=1;
+            for(int i=0;i<n;i++)
+            {
+                int hasLeftNeighbor=(i>0 && b[i]==b[i-1]);
+                int hasRightNeighbor=(i<n-1 && b[i]==b[i+1]);
+                if(!hasLeftNeighbor && !hasRightNeighbor)
+                {
+                    happy=0;
+                    break;
+                }
+            }
+             printf(happy? "YES\n":"NO\n");
+            }
+    }
+        return 0;
+}
