@@ -1,0 +1,67 @@
+#include<stdio.h>
+#include<string.h>
+void blast(char a[][205],char b[][205],int r,int c)
+{
+    for(int i=0;i<r;i++)
+    {
+        for(int j=0;j<c;j++)
+        {
+            b[i][j]='O';
+        }
+            b[i][c]='\0';
+        }
+        for(int i=0;i<r;i++)
+        {
+            for(int j=0;j<c;j++)
+            {
+                if(a[i][j]=='O')
+                {
+                    b[i][j]='.';
+                    if(i>0)b[i-1][j]='.';
+                    if(i<r-1)b[i+1][j]='.';
+                    if(j>0)b[i][j-1]='.';
+                    if(j<c-1)b[i][j+1]='.';
+                }
+            }
+        }
+    }
+        int main()
+        {
+            int r,c,n;
+            scanf("%d%d%d",&r,&c,&n);
+            char grid[205][205],g1[205][205],g2[205][205];
+            for(int i=0;i<r;i++)
+        scanf("%s",grid[i]);
+        if(n==1)
+        {
+            for(int i=0;i<r;i++)
+            printf("%s\n",grid[i]);
+        }
+        else if(n%2==0)
+        {
+            for(int i=0;i<r;i++)
+            {
+                for(int j=0;j<c;j++)
+                printf("O");
+                printf("\n");
+            }
+        }
+        else 
+    {
+        blast(grid,g1,r,c);
+        if(n%4==3)
+        {
+        for(int i=0;i<r;i++)
+            printf("%s\n",g1[i]);
+        }
+        else 
+        {
+            blast(g1,g2,r,c);
+            for(int i=0;i<r;i++)
+            printf("%s\n",g2[i]);
+        }
+    }
+        return 0;
+        }
+        
+
