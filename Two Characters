@@ -1,0 +1,41 @@
+#include<stdio.h>
+#include<string.h>
+int alternate(char s[])
+{
+    int maxLen=0;
+    int n=strlen(s);
+    for(char c1='a';c1<='z';c1++)
+    {
+        for(char c2='c1+1';c2<='z';c2++)
+        {
+            char prev='\0';
+            int len=0;
+            int valid=1;
+            for(int i=0;i<n;i++)
+            {
+                if(s[i]==c1||s[i]==c2)
+                {
+                    if(s[i]==prev)
+                    {
+                        valid=0;
+                        break;
+                    }
+                    prev=s[i];
+                    len++;
+                }
+            }
+            if(valid && len>=2 && len>maxLen)
+            maxLen=len;
+        }
+    }
+    return maxLen;
+}
+int main()
+{
+    int n;
+    char s[1001];
+    scanf("%d",&n);
+    scanf("%s",s);
+    printf("%d\n",alternate(s));
+    return 0;
+}
