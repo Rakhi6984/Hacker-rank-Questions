@@ -1,0 +1,27 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+char*funnyString(char*s)
+{
+    int n=strlen(s);
+    for(int i=0;i<n-1;i++)
+    {
+        int d1=abs(s[i]-s[i+1]);
+        int d2=abs(s[n-1-i]-s[n-2-i]);
+        if(d1!=d2)
+        return "Not Funny";
+    }
+    return "Funny";
+}
+int main()
+{
+int q;
+scanf("%d",&q);
+while(q--)
+{
+    char s[10001];
+    scanf("%s",s);
+    printf("%s\n",funnyString(s));
+}
+return 0;
+}
