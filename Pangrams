@@ -1,0 +1,32 @@
+#include<stdio.h>
+#include<string.h>
+#include<ctype.h>
+char*pangrams(char s[])
+{
+    static char yes[]="pangram";
+    static char no[]="not pangram";
+    int freq[26]={0};
+    for(int i=0;s[i]!='\0';i++)
+    {
+        if(isalpha(s[i]))
+        {
+            char ch=tolower(s[i]);
+            freq[ch-'a']=1;
+        }
+    }
+    for(int i=0;i<26;i++)
+    {
+        if(freq[i]==0)
+        {
+            return no;
+        }
+    }
+return yes;
+}
+int main()
+{
+    char s[1001];
+    fgets(s,sizeof(s),stdin);
+    printf("%s\n",pangrams(s));
+    return 0;
+}
