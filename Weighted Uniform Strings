@@ -1,0 +1,51 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+char**weightUniformStrings(char*s,int queries_count,int*queries,int*result_count)
+{
+    static int weight[26000001]={0};
+    memset(weight,0,sizeof(weight));
+    int sum=0;
+    for(int i=0;s[i]!='\0';i++)
+    {
+        if(i> 0&& s[i]==s[i-1])
+        {
+            sum+=(s[i]-'a'+1);
+        }
+        else 
+        {
+            sum=s[i]-'a'+1;
+        }
+        weight[sum]=1;
+    }
+    char**result=(char **)malloc(queries_count*sizeof(char*));
+    for(int i=0;i<queries_count;i++)
+    {
+        if(queries[i]>=0 && queries[i]<=2600000 && weight[queries[i]])
+        result[i]="Yes";
+        else 
+        result[i]="No";
+    }
+    *result_count=queries_count;
+    return result;
+}
+int main()
+{
+    char s[100001];
+    scanf("%s",s);
+    int n;
+    scanf("%d",&n);
+    int queries[n];
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&queries[i]);
+    }
+    int result_count;
+    char**result=weightUniformStrings(s,n,queries,&result_count);
+    for(int i=0;i<result_count;i++)
+    {
+        printf("%s\n",result[i]);
+    }
+    free(result);
+    return 0;
+    }
