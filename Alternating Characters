@@ -1,0 +1,24 @@
+#include<stdio.h>
+#include<string.h>
+int alternatingCharacters(char*s)
+{
+    int count=0;
+    for(int i=0;s[i]!='\0';i++)
+    {
+        if(s[i]==s[i-1])
+        count++;
+    }
+    return count;
+}
+int main()
+{
+    int q;
+    scanf("%d",&q);
+    while(q--)
+    {
+        char s[1000001];
+        scanf("%s",s);
+        printf("%d\n",alternatingCharacters(s));
+    }
+    return 0;
+}
