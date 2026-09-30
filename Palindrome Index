@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+bool isPalindrome(char* s, int left, int right) {
+    while (left < right) {
+        if (s[left] != s[right]) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+
+int palindromeIndex(char* s) {
+    int left = 0;
+    int right = strlen(s) - 1;
+    
+    while (left < right) {
+        if (s[left] == s[right]) {
+            left++;
+            right--;
+        } else {
+            if (isPalindrome(s, left + 1, right)) {
+                return left;
+            }
+            if (isPalindrome(s, left, right - 1)) {
+                return right;
+            }
+            return -1;
+        }
+    }
+    
+    return -1;
+}
+
+int main() {
+    int q;
+    if (scanf("%d", &q) != 1) return 0;
+    
+    while (q--) {
+        char s[100005];
+        scanf("%s", s);
+        printf("%d\n", palindromeIndex(s));
+    }
+    
+    return 0;
+}
