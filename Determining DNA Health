@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAX_NODES 2000005
+int trie[MAX_NODES][26];
+int node_count = 0;
+int* gene_indices[MAX_NODES];
+int gene_sizes[MAX_NODES];
+int gene_caps[MAX_NODES];
+
+void append_index(int node, int index) {
+    if (gene_sizes[node] >= gene_caps[node]) {
+        gene_caps[node] = gene_caps[node] == 0 ? 4 : gene_caps[node] * 2;
+        gene_indices[node] = (int*)realloc(gene_indices[node], gene_caps[node] * sizeof(int));
+    }
+    gene_indices[node][gene_sizes[node]++] = index;
+}
+
+void insert(const char* gene, int index) {
+    int curr = 0;
+    for (int i = 0; gene[i] != '\0'; i++) {
+        int idx = gene[i] - 'a';
+        if (!trie[curr][idx]) {
+            trie[curr][idx] = ++node_count;
+        }
+        curr = trie[curr][idx];
+    }
+    append_ns:
+    append_index(curr, index);
+}
+
+int lower_bound(int* arr, int size, int val) {
+    int low = 0, high = size;
+    while (low < high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] >= val) high = mid;
+        else low = mid + 1;
+    }
+    return low;
+}
+
+int upper_bound(int* arr, int size, int val) {
+    int low = 0, high = size;
+    while (low < high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] > val) high = mid;
+        else low = mid + 1;
+    }
+    return low;
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1) return 0;
+    char* buffer = (char*)malloc(2000005 * sizeof(char));
+
+    for (int i = 0; i < n; i++) {
+        scanf("%s", buffer);
+        insert(buffer, i);
+    }
+
+    int* health = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &health[i]);
+    }
+
+    int s;
+    scanf("%d", &s);
+
+    long long min_health = -1;
+    long long max_health = -1;
+
+    for (int q = 0; q < s; q++) {
+        int first, last;
+        scanf("%d %d %s", &first, &last, buffer);
+
+        long long current_total_health = 0;
+        int len = strlen(buffer);
+
+        for (int i = 0; i < len; i++) {
+            int curr = 0;
+            int j = i;
+            while (buffer[j] != '\0') {
+                int idx = buffer[j] - 'a';
+                if (!trie[curr][idx]) break;
+                curr = trie[curr][idx];
+                j++;
+
+                if (gene_sizes[curr] > 0) {
+                    int lb = lower_bound(gene_indices[curr], gene_sizes[curr], first);
+                    int ub = upper_bound(gene_indices[curr], gene_sizes[curr], last);
+                    for (int k = lb; k < ub; k++) {
+                        current_total_health += health[gene_indices[curr][k]];
+                    }
+                }
+            }
+        }
+
+        if (min_health == -1 || current_total_health < min_health) {
+            min_health = current_total_health;
+        }
+        if (max_health == -1 || current_total_health > max_health) {
+            max_health = current_total_health;
+        }
+    }
+
+    printf("%lld %lld\n", min_health, max_health);
+    free(buffer);
+    free(health);
+    for (int i = 0; i <= node_count; i++) {
+        if (gene_indices[i]) free(gene_indices[i]);
+    }
+
+    return 0;
+}
