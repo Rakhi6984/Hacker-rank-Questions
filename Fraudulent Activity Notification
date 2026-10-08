@@ -1,0 +1,54 @@
+#include<stdio.h>
+#include<stdlib.h>
+double getMedian(int count[], int d)
+{
+    int countTillNow= 0;
+    int median1 = -1, median2 = -1;
+    int target1 = (d+1)/2;
+    int target2 = (d/2) +1;
+    for(int i =0;i<= 200;i++)
+    {
+        countTillNow += count[i];
+        if(median1 == -1 && countTillNow >= target1) median1 = i;
+        if(countTillNow >= target2)
+        {
+            median2 = i;
+            break;
+        }
+    }
+    return (median1 +median2) / 2.0;
+}
+int activityNotifications(int expenditure_count, int* expenditure, int d)
+{
+    int *count = (int*)calloc(201, sizeof(int));
+    int notifications = 0;
+    for(int i=0;i<d;i++)
+    {
+        count[expenditure[i]]++;
+    }
+    for(int i=d;i< expenditure_count;i++)
+    {
+        double median = getMedian(count, d);
+        if((double) expenditure[i] >= 2 * median)
+        {
+            notifications++;
+        }
+        count[expenditure[i-d]]--;
+        count[expenditure[i]]++;
+    }
+    free(count);
+    return notifications;
+}
+int main()
+{
+    int n, d;
+    scanf("%d %d", &n, &d);
+    int *expenditure = (int*)malloc(sizeof(int)*n);
+    for(int i=0;i< n;i++)
+    {
+        scanf("%d", &expenditure[i]);
+    }
+    printf("%d", activityNotifications(n, expenditure,d));
+    free(expenditure);
+    return 0;
+}
