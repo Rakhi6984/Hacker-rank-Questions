@@ -1,0 +1,34 @@
+#include<stdio.h>
+#include<string.h>
+char* gameOfThrones(char* s)
+{
+    int char_counts[26] = {0};
+    int odd_count = 0;
+    for(int i =0; s[i] != '\0'; i++)
+    {
+        char_counts[s[i]- 'a']++;
+    }
+    for (int i=0;i<26;i++)
+    {
+        if(char_counts[i] %2 != 0)
+        {
+            odd_count++;
+        }
+    }
+    if (odd_count <=1)
+    {
+        return "YES";
+    }
+    else 
+    {
+        return "NO";
+    }
+}
+int main()
+{
+    char s[100005];
+    scanf("%s", s);
+    char* result = gameOfThrones(s);
+    printf("%s\n", result);
+    return 0;
+}
