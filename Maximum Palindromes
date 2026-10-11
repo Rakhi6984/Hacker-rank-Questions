@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MOD 1000000007
+#define MAXN 100005
+
+long long fact[MAXN];
+long long invFact[MAXN];
+int pref[MAXN][26];
+int len_s;
+
+long long power(long long base, long long exp) {
+    long long res = 1;
+    base %= MOD;
+    while (exp > 0) {
+        if (exp % 2 == 1) res = (res * base) % MOD;
+        base = (base * base) % MOD;
+        exp /= 2;
+    }
+    return res;
+}
+
+long long modInverse(long long n) {
+    return power(n, MOD - 2);
+}
+
+void precomputeFactorials() {
+    fact[0] = 1;
+    invFact[0] = 1;
+    for (int i = 1; i < MAXN; i++) {
+        fact[i] = (fact[i - 1] * i) % MOD;
+    }
+    invFact[MAXN - 1] = modInverse(fact[MAXN - 1]);
+    for (int i = MAXN - 2; i >= 1; i--) {
+        invFact[i] = (invFact[i + 1] * (i + 1)) % MOD;
+    }
+}
+
+void initialize(char* s) {
+    len_s = strlen(s);
+    precomputeFactorials();
+
+    for (int i = 0; i < 26; i++) {
+        pref[0][i] = 0;
+    }
+
+    for (int i = 0; i < len_s; i++) {
+        for (int c = 0; c < 26; c++) {
+            pref[i + 1][c] = pref[i][c];
+        }
+        pref[i + 1][s[i] - 'a']++;
+    }
+}
+
+int answerQuery(int l, int r) {
+    int cnt[26];
+    int total_pairs = 0;
+    int odd_freq_chars = 0;
+
+    for (int c = 0; c < 26; c++) {
+        cnt[c] = pref[r][c] - pref[l - 1][c];
+        int pairs = cnt[c] / 2;
+        total_pairs += pairs;
+        if (cnt[c] % 2 != 0) {
+            odd_freq_chars++;
+        }
+    }
+
+    long long ways = fact[total_pairs];
+    for (int c = 0; c < 26; c++) {
+        int pairs = cnt[c] / 2;
+        if (pairs > 0) {
+            ways = (ways * invFact[pairs]) % MOD;
+        }
+    }
+
+    if (odd_freq_chars > 0) {
+        ways = (ways * odd_freq_chars) % MOD;
+    }
+
+    return (int)ways;
+}
+
+int main() {
+    char s[MAXN];
+    if (scanf("%s", s) != 1) return 0;
+    
+    initialize(s);
+
+    int q;
+    if (scanf("%d", &q) != 1) return 0;
+
+    while (q--) {
+        int l, r;
+        scanf("%d %d", &l, &r);
+        printf("%d\n", answerQuery(l, r));
+    }
+
+    return 0;
+}
