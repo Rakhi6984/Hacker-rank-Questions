@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+char* highestValuePalindrome(char* s, int n, int k) {
+    int *changed = (int*)calloc(n, sizeof(int));
+    if (!changed) return "-1";
+
+    int left = 0, right = n - 1;
+    int mismatches = 0;
+    while (left < right) {
+        if (s[left] != s[right]) {
+            mismatches++;
+        }
+        left++;
+        right--;
+    }
+
+    if (mismatches > k) {
+        free(changed);
+        return "-1";
+    }
+    left = 0;
+    right = n - 1;
+    while (left < right) {
+        if (s[left] != s[right]) {
+            char max_char = (s[left] > s[right]) ? s[left] : s[right];
+            if (s[left] != max_char) {
+                s[left] = max_char;
+                changed[left] = 1;
+            }
+            if (s[right] != max_char) {
+                s[right] = max_char;
+                changed[right] = 1;
+            }
+            k--;
+            mismatches--;
+        }
+        left++;
+        right--;
+    }
+    left = 0;
+    right = n - 1;
+    while (left <= right && k > 0) {
+        if (left == right) {
+            if (s[left] != '9') {
+                s[left] = '9';
+                k--;
+            }
+            break;
+        }
+
+        if (s[left] == '9') {
+            left++;
+            right--;
+            continue;
+        }
+        int cost = (changed[left] || changed[right]) ? 1 : 2;
+
+        if (k >= cost) {
+            int extra_needed_for_others = 0;
+            if (k - cost >= extra_needed_for_others) {
+                s[left] = '9';
+                s[right] = '9';
+                k -= cost;
+            }
+        } else if (cost == 2 && k == 1) {
+        }
+        
+        left++;
+        right--;
+    }
+
+    free(changed);
+    return s;
+}
+
+int main() {
+    int n, k;
+    if (scanf("%d %d", &n, &k) == 2) {
+        char *s = (char*)malloc((n + 1) * sizeof(char));
+        if (!s) return 1;
+        scanf("%s", s);
+        
+        char *result = highestValuePalindrome(s, n, k);
+        printf("%s\n", result);
+        
+        free(s);
+    }
+    return 0;
+}
