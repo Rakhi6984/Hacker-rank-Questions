@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+int compare(const void *a, const void *b) {
+    return (*(char *)a - *(char *)b);
+}
+int sherlockAndAnagrams(char* s) {
+    int n = strlen(s);
+    int total_pairs = 0;
+    int max_subs = (n * (n + 1)) / 2;
+    char **subs = (char **)malloc(max_subs * sizeof(char *));
+    int sub_count = 0;
+    for (int len = 1; len < n; len++) {
+        for (int i = 0; i <= n - len; i++) {
+            subs[sub_count] = (char *)malloc((len + 1) * sizeof(char));
+            strncpy(subs[sub_count], s + i, len);
+            subs[sub_count][len] = '\0';
+            qsort(subs[sub_count], len, sizeof(char), compare);
+            sub_count++;
+        }
+    }
+    for (int i = 0; i < sub_count; i++) {
+        if (subs[i] == NULL) continue;
+        int freq = 1;
+        for (int j = i + 1; j < sub_count; j++) {
+            if (subs[j] != NULL && strcmp(subs[i], subs[j]) == 0) {
+                freq++;
+                free(subs[j]);
+                subs[j] = NULL;
+            }
+        }
+        if (freq > 1) {
+            total_pairs += (freq * (freq - 1)) / 2;
+        }
+        free(subs[i]);
+    }
+
+    free(subs);
+    return total_pairs;
+}
+
+int main() {
+    int q;
+    if (scanf("%d", &q) != 1) return 0;
+    while (q--) {
+        char s[101];
+        scanf("%s", s);
+        printf("%d\n", sherlockAndAnagrams(s));
+    }
+    return 0;
+}
