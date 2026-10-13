@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAXLEN 300005
+
+char A[MAXLEN];
+char B[MAXLEN];
+
+void solve() {
+    if (scanf("%s %s", A, B) != 2) return;
+    
+    int n = strlen(A);
+    int m = strlen(B);
+    
+    int i = 0, j = 0;
+    
+    while (i < n || j < m) {
+        int k = i, l = j;
+        
+        while (k < n && l < m && A[k] == B[l]) {
+            k++;
+            l++;
+        }
+        
+        if (k == n) {
+            for (int temp = j; j < m && B[j] == B[temp]; j++) {
+                putchar(B[j]);
+            }
+        } else if (l == m) {
+            for (int temp = i; i < n && A[i] == A[temp]; i++) {
+                putchar(A[i]);
+            }
+        } else if (A[k] < B[l]) {
+            
+            for (int temp = i; i < n && A[i] == A[temp]; i++) {
+                putchar(A[i]);
+            }
+        } else {
+        
+            for (int temp = j; j < m && B[j] == B[temp]; j++) {
+                putchar(B[j]);
+            }
+        }
+    }
+    putchar('\n');
+}
+
+int main() {
+    int t;
+    if (scanf("%d", &t) == 1) {
+        while (t--) {
+            solve();
+        }
+    }
+    return 0;
+}
