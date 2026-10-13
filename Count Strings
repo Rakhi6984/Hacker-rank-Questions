@@ -1,0 +1,254 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MOD 1000000007LL
+#define MAX_NFA_STATES 500
+#define MAX_DFA_STATES 200
+
+typedef struct Edge {
+    int to;
+    char symbol; 
+    struct Edge* next;
+} Edge;
+
+typedef struct {
+    Edge* head;
+} StateNode;
+
+StateNode nfa_adj[MAX_NFA_STATES];
+int nfa_state_count = 0;
+
+typedef struct {
+    int start;
+    int accept;
+} NFA;
+
+int create_state() {
+    int id = nfa_state_count++;
+    nfa_adj[id].head = NULL;
+    return id;
+}
+
+void add_edge(int u, int v, char symbol) {
+    Edge* e = (Edge*)malloc(sizeof(Edge));
+    e->to = v;
+    e->symbol = symbol;
+    e->next = nfa_adj[u].head;
+    nfa_adj[u].head = e;
+}
+NFA build_nfa(const char* s, int* pos) {
+    if (s[*pos] == 'a' || s[*pos] == 'b') {
+        char c = s[(*pos)++];
+        int start = create_state();
+        int accept = create_state();
+        add_edge(start, accept, c);
+        return (NFA){start, accept};
+    }
+    
+    if (s[*pos] == '(') {
+        (*pos)++;
+        NFA left = build_nfa(s, pos);
+        
+        if (s[*pos] == '*') {
+            (*pos)++;
+            (*pos)++;
+            int start = create_state();
+            int accept = create_state();
+            add_edge(start, left.start, 0);
+            add_edge(left.accept, accept, 0);
+            add_edge(start, accept, 0);
+            add_edge(left.accept, left.start, 0);
+            return (NFA){start, accept};
+        } else if (s[*pos] == '|') {
+            (*pos)++; 
+            NFA right = build_nfa(s, pos);
+            (*pos)++; 
+            int start = create_state();
+            int accept = create_state();
+            add_edge(start, left.start, 0);
+            add_edge(start, right.start, 0);
+            add_edge(left.accept, accept, 0);
+            add_edge(right.accept, accept, 0);
+            return (NFA){start, accept};
+        } else {
+            NFA right = build_nfa(s, pos);
+            (*pos)++; 
+            add_edge(left.accept, right.start, 0);
+            return (NFA){left.start, right.accept};
+        }
+    }
+    return (NFA){0, 0};
+}
+
+void get_epsilon_closure(int* in_closure, int state_count) {
+    int q[MAX_NFA_STATES];
+    int head = 0, tail = 0;
+
+    for (int i = 0; i < state_count; i++) {
+        if (in_closure[i]) {
+            q[tail++] = i;
+        }
+    }
+
+    while (head < tail) {
+        int u = q[head++];
+        for (Edge* e = nfa_adj[u].head; e != NULL; e = e->next) {
+            if (e->symbol == 0 && !in_closure[e->to]) {
+                in_closure[e->to] = 1;
+                q[tail++] = e->to;
+            }
+        }
+    }
+}
+
+
+void multiply_matrix(long long A[MAX_DFA_STATES][MAX_DFA_STATES], 
+                     long long B[MAX_DFA_STATES][MAX_DFA_STATES], 
+                     long long C[MAX_DFA_STATES][MAX_DFA_STATES], 
+                     int size) {
+    long long temp[MAX_DFA_STATES][MAX_DFA_STATES] = {0};
+    for (int i = 0; i < size; i++) {
+        for (int k = 0; k < size; k++) {
+            if (A[i][k] == 0) continue;
+            for (int j = 0; j < size; j++) {
+                temp[i][j] = (temp[i][j] + A[i][k] * B[k][j]) % MOD;
+            }
+        }
+    }
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) C[i][j] = temp[i][j];
+    }
+}
+
+void power_matrix(long long A[MAX_DFA_STATES][MAX_DFA_STATES], 
+                  long long p, 
+                  long long res[MAX_DFA_STATES][MAX_DFA_STATES], 
+                  int size) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) res[i][j] = (i == j) ? 1 : 0;
+    }
+
+    long long base[MAX_DFA_STATES][MAX_DFA_STATES];
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) base[i][j] = A[i][j];
+    }
+
+    while (p > 0) {
+        if (p & 1) multiply_matrix(res, base, res, size);
+        multiply_matrix(base, base, base, size);
+        p >>= 1;
+    }
+}
+
+int dfa_states[MAX_DFA_STATES][MAX_NFA_STATES];
+int dfa_state_count = 0;
+
+int find_or_add_dfa_state(int* closure, int nfa_count) {
+    for (int i = 0; i < dfa_state_count; i++) {
+        int same = 1;
+        for (int j = 0; j < nfa_count; j++) {
+            if (dfa_states[i][j] != closure[j]) {
+                same = 0;
+                break;
+            }
+        }
+        if (same) return i;
+    }
+
+    for (int j = 0; j < nfa_count; j++) {
+        dfa_states[dfa_state_count][j] = closure[j];
+    }
+    return dfa_state_count++;
+}
+
+void solve() {
+    char regex[1005];
+    long long L;
+    if (scanf("%s %lld", regex, &L) != 2) return;
+
+
+    for (int i = 0; i < nfa_state_count; i++) {
+        Edge* curr = nfa_adj[i].head;
+        while (curr) {
+            Edge* tmp = curr;
+            curr = curr->next;
+            free(tmp);
+        }
+        nfa_adj[i].head = NULL;
+    }
+    nfa_state_count = 0;
+    dfa_state_count = 0;
+
+    int pos = 0;
+    NFA nfa = build_nfa(regex, &pos);
+
+
+    int start_closure[MAX_NFA_STATES] = {0};
+    start_closure[nfa.start] = 1;
+    get_epsilon_closure(start_closure, nfa_state_count);
+
+    find_or_add_dfa_state(start_closure, nfa_state_count);
+
+    int q[MAX_DFA_STATES];
+    int head = 0, tail = 0;
+    q[tail++] = 0;
+
+    long long adj[MAX_DFA_STATES][MAX_DFA_STATES] = {0};
+
+    while (head < tail) {
+        int u_id = q[head++];
+
+        for (int sym = 0; sym < 2; sym++) {
+            char target_sym = (sym == 0) ? 'a' : 'b';
+            int move_set[MAX_NFA_STATES] = {0};
+            int has_move = 0;
+
+            for (int nfa_st = 0; nfa_st < nfa_state_count; nfa_st++) {
+                if (dfa_states[u_id][nfa_st]) {
+                    for (Edge* e = nfa_adj[nfa_st].head; e != NULL; e = e->next) {
+                        if (e->symbol == target_sym) {
+                            move_set[e->to] = 1;
+                            has_move = 1;
+                        }
+                    }
+                }
+            }
+
+            if (!has_move) continue;
+
+            get_epsilon_closure(move_set, nfa_state_count);
+
+            int prev_cnt = dfa_state_count;
+            int v_id = find_or_add_dfa_state(move_set, nfa_state_count);
+
+            if (dfa_state_count > prev_cnt) {
+                q[tail++] = v_id;
+            }
+
+            adj[u_id][v_id]++;
+        }
+    }
+
+
+    long long res[MAX_DFA_STATES][MAX_DFA_STATES];
+    power_matrix(adj, L, res, dfa_state_count);
+
+
+    long long total_valid_strings = 0;
+    for (int i = 0; i < dfa_state_count; i++) {
+        if (dfa_states[i][nfa.accept]) {
+            total_valid_strings = (total_valid_strings + res[0][i]) % MOD;
+        }
+    }
+
+    printf("%lld\n", total_valid_strings);
+}
+
+int main() {
+    int t;
+    if (scanf("%d", &t) == 1) {
+        while (t--) solve();
+    }
+    return 0;
+}
