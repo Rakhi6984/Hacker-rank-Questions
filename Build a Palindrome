@@ -1,0 +1,217 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAXN 200005
+#define LOGN 19
+
+char A[MAXN], B[MAXN], RevB[MAXN], S[MAXN];
+int lenA, lenB, n;
+
+int sa[MAXN], pos[MAXN], tmp[MAXN], lcp[MAXN];
+int st_lcp[LOGN][MAXN];
+int lg[MAXN];
+
+int p_a[MAXN], p_b[MAXN];         
+int st_pb[LOGN][MAXN];             
+int gap;
+int cmp_sa(const void *a, const void *b) {
+    int i = *(const int *)a;
+    int j = *(const int *)b;
+    if (pos[i] != pos[j]) return pos[i] - pos[j];
+    i += gap; j += gap;
+    int ri = (i < n) ? pos[i] : -1;
+    int rj = (j < n) ? pos[j] : -1;
+    return ri - rj;
+}
+
+void build_sa() {
+    for (int i = 0; i < n; i++) {
+        sa[i] = i;
+        pos[i] = S[i];
+    }
+    for (gap = 1;; gap *= 2) {
+        qsort(sa, n, sizeof(int), cmp_sa);
+        tmp[0] = 0;
+        for (int i = 1; i < n; i++) {
+            int cmp = (pos[sa[i-1]] != pos[sa[i]]);
+            if (!cmp) {
+                int i1 = sa[i-1] + gap, i2 = sa[i] + gap;
+                int r1 = (i1 < n) ? pos[i1] : -1;
+                int r2 = (i2 < n) ? pos[i2] : -1;
+                cmp = (r1 != r2);
+            }
+            tmp[i] = tmp[i - 1] + cmp;
+        }
+        for (int i = 0; i < n; i++) pos[sa[i]] = tmp[i];
+        if (tmp[n - 1] == n - 1) break;
+    }
+}
+
+void build_lcp() {
+    for (int i = 0, k = 0; i < n; i++) {
+        if (pos[i] != n - 1) {
+            for (int j = sa[pos[i] + 1]; i + k < n && j + k < n && S[i + k] == S[j + k];) k++;
+            lcp[pos[i]] = k;
+            if (k) k--;
+        }
+    }
+}
+
+void build_rmq_lcp() {
+    for (int i = 0; i < n - 1; i++) st_lcp[0][i] = lcp[i];
+    for (int j = 1; (1 << j) < n; j++) {
+        for (int i = 0; i + (1 << j) <= n - 1; i++) {
+            int a = st_lcp[j - 1][i];
+            int b = st_lcp[j - 1][i + (1 << (j - 1))];
+            st_lcp[j][i] = (a < b) ? a : b;
+        }
+    }
+    lg[1] = 0;
+    for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;
+}
+
+int query_lcp(int r1, int r2) {
+    if (r1 == r2) return n - sa[r1];
+    if (r1 > r2) { int t = r1; r1 = r2; r2 = t; }
+    int k = lg[r2 - r1];
+    int a = st_lcp[k][r1];
+    int b = st_lcp[k][r2 - (1 << k)];
+    return (a < b) ? a : b;
+}
+void compute_start_palindromes(const char* s, int slen, int* start_p) {
+    static char t[MAXN * 2];
+    static int mp[MAXN * 2];
+    int m = 0;
+    t[m++] = '$';
+    for (int i = 0; i < slen; i++) {
+        t[m++] = '#';
+        t[m++] = s[i];
+    }
+    t[m++] = '#';
+    t[m] = '\0';
+
+    memset(mp, 0, sizeof(int) * m);
+    int c = 0, r = 0;
+    for (int i = 1; i < m - 1; i++) {
+        int i_mirror = 2 * c - i;
+        if (r > i) mp[i] = (r - i < mp[i_mirror]) ? r - i : mp[i_mirror];
+        while (t[i + 1 + mp[i]] == t[i - 1 - mp[i]]) mp[i]++;
+        if (i + mp[i] > r) { c = i; r = i + mp[i]; }
+    }
+
+    for (int i = 0; i < slen; i++) start_p[i] = 0;
+
+    for (int i = 1; i < m - 1; i++) {
+        int rad = mp[i];
+        if (rad == 0) continue;
+        int start_idx = (i - rad) / 2;
+        if (rad > start_p[start_idx]) {
+            start_p[start_idx] = rad;
+        }
+    }
+
+    for (int i = 0; i < slen - 1; i++) {
+        if (start_p[i] - 2 > start_p[i + 1]) {
+            start_p[i + 1] = start_p[i] - 2;
+        }
+    }
+}
+
+void solve() {
+    if (scanf("%s %s", A, B) != 2) return;
+
+    lenA = strlen(A);
+    lenB = strlen(B);
+
+    for (int i = 0; i < lenB; i++) RevB[i] = B[lenB - 1 - i];
+    RevB[lenB] = '\0';
+
+    sprintf(S, "%s#%s", A, RevB);
+    n = strlen(S);
+
+    build_sa();
+    build_lcp();
+    build_rmq_lcp();
+
+    compute_start_palindromes(A, lenA, p_a);
+    compute_start_palindromes(RevB, lenB, p_b);
+
+    int max_len = 0;
+    static char best_ans[MAXN];
+    best_ans[0] = '\0';
+    static char cand[MAXN];
+
+    for (int i = 0; i < lenA; i++) {
+        int r_a = pos[i];
+
+    
+        for (int dir = -1; dir <= 1; dir += 2) {
+            int step = 1;
+            while (1) {
+                int target_rank = r_a + dir * step;
+                if (target_rank < 0 || target_rank >= n) break;
+
+                int target_sa = sa[target_rank];
+                int lcp_val = query_lcp(r_a, target_rank);
+                if (lcp_val == 0) break;
+
+                if (target_sa > lenA) {
+                    int j = target_sa - (lenA + 1);
+
+                    for (int match = lcp_val; match >= 1 && match >= lcp_val - 1; match--) {
+                        int mid_a = (i + match < lenA) ? p_a[i + match] : 0;
+                        int mid_b = (j + match < lenB) ? p_b[j + match] : 0;
+
+                        int mids[2] = {mid_a, mid_b};
+                        int is_a[2] = {1, 0};
+
+                        for (int k = 0; k < 2; k++) {
+                            int cur_mid = mids[k];
+                            int total_len = 2 * match + cur_mid;
+
+                            if (total_len < max_len) continue;
+
+                            int idx = 0;
+                            for (int m = 0; m < match; m++) cand[idx++] = A[i + m];
+                            if (cur_mid > 0) {
+                                if (is_a[k]) {
+                                    for (int m = 0; m < cur_mid; m++) cand[idx++] = A[i + match + m];
+                                } else {
+                                    for (int m = 0; m < cur_mid; m++) cand[idx++] = RevB[j + match + m];
+                                }
+                            }
+                            for (int m = match - 1; m >= 0; m--) cand[idx++] = A[i + m];
+                            cand[idx] = '\0';
+
+                            if (total_len > max_len) {
+                                max_len = total_len;
+                                strcpy(best_ans, cand);
+                            } else if (total_len == max_len) {
+                                if (best_ans[0] == '\0' || strcmp(cand, best_ans) < 0) {
+                                    strcpy(best_ans, cand);
+                                }
+                            }
+                        }
+                    }
+                }
+                step++;
+                if (step > 30) break; 
+            }
+        }
+    }
+
+    if (max_len == 0) {
+        printf("-1\n");
+    } else {
+        printf("%s\n", best_ans);
+    }
+}
+
+int main() {
+    int t;
+    if (scanf("%d", &t) == 1) {
+        while (t--) solve();
+    }
+    return 0;
+}
