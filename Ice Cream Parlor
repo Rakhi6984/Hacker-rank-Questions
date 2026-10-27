@@ -1,0 +1,36 @@
+#include<stdio.h>
+#include<stdlib.h>
+void icecreamParlor(int m, int n,int* cost)
+{
+    for(int i=0;i<n;i++)
+    {
+        for(int j=i+1;j<n;j++)
+        {
+            if(cost[i]+cost[j]==m)
+            {
+                printf("%d %d\n",i+1,j+1);
+                return;
+            }
+        }
+    }
+}
+int main()
+{
+    int t;
+    if(scanf("%d",&t)!=1)
+    return 0;
+    while(t--)
+    {
+        int m,n;
+        scanf("%d",&m);
+        scanf("%d",&n);
+        int* cost=(int*)malloc(n * sizeof(int));
+        for(int i=0;i<n;i++)
+        {
+            scanf("%d", &cost[i]);
+        }
+        icecreamParlor(m, n, cost);
+        free(cost);
+    }
+    return 0;
+}
