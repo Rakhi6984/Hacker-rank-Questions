@@ -1,0 +1,43 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<limits.h>
+#include<math.h>
+int compare(const void *a,const void *b)
+{
+    int int_a = *((int*) a);
+    int int_b = *((int*) b);
+    if (int_a < int_b)
+    return -1;
+    if(int_a > int_b)
+    return 1;
+    return 0;
+}
+int minimumAbsoluteDifference(int arr_count, int *arr)
+{
+    qsort(arr, arr_count,sizeof(int), compare);
+    int min_diff = INT_MAX;
+    for(int i =0;i<arr_count-1;i++)
+    {
+        int diff = abs(arr[i+1] - arr[i]);
+        if(diff < min_diff)
+        {
+            min_diff = diff;
+        }
+    }
+    return min_diff;
+}
+int main()
+{
+    int n;
+    if (scanf("%d", &n) != 1)
+    return 0;
+    int *arr = malloc(n * sizeof(int));
+    for (int i=0;i<n;i++)
+    {
+        scanf("%d", &arr[i]);
+    }
+    int result = minimumAbsoluteDifference(n, arr);
+    printf("%d", result);
+    free(arr);
+    return 0;
+}
