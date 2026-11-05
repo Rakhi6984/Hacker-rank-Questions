@@ -1,0 +1,37 @@
+#include<stdio.h>
+#include<stdlib.h>
+int compare_desc(const void *a, const void *b)
+{
+    int int_a = *((int*) a);
+    int int_b = *((int*) b);
+    if (int_a > int_b) 
+    return -1;
+    if (int_a < int_b)
+    return 1;
+    return 0;
+}
+long marcsCakewalk(int calorie_count, int* calorie)
+{
+    qsort(calorie, calorie_count,sizeof(int), compare_desc);
+    long long total_miles = 0;
+    for(int i=0;i<calorie_count;i++)
+    {
+        total_miles += (long long)calorie[i]* (1LL << i);
+    }
+    return (long)total_miles;
+}
+int main()
+{
+    int n;
+    if (scanf("%d", &n) !=1)
+    return 0;
+    int *calorie = malloc(n * sizeof(int));
+    for(int i =0;i<n;i++)
+    {
+        scanf("%d", &calorie[i]);
+    }
+    long result = marcsCakewalk(n, calorie);
+    printf("%ld\n", result);
+    free(calorie);
+    return 0;
+}
