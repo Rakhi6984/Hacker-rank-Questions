@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int compare(const void *a, const void *b) {
+    return (*(int *)a - *(int *)b);
+}
+
+int luckBalance(int k, int contests_rows, int contests_columns, int** contests) {
+    int total_luck = 0;
+    int *important = (int *)malloc(contests_rows * sizeof(int));
+    int imp_count = 0;
+
+    for (int i = 0; i < contests_rows; i++) {
+        int luck = contests[i][0];
+        int importance = contests[i][1];
+
+        if (importance == 1) {
+            important[imp_count++] = luck;
+        } else {
+            total_luck += luck;
+        }
+    }
+    qsort(important, imp_count, sizeof(int), compare);
+
+    int wins = imp_count - k;
+    if (wins < 0) wins = 0;
+    for (int i = 0; i < imp_count; i++) {
+        if (i < wins) {
+            total_luck -= important[i];
+        } else {
+            total_luck += important[i];
+        }
+    }
+
+    free(important);
+    return total_luck;
+}
+
+int main() {
+    int n, k;
+    if (scanf("%d %d", &n, &k) != 2) return 0;
+
+    int** contests = (int**)malloc(n * sizeof(int*));
+    for (int i = 0; i < n; i++) {
+        contests[i] = (int*)malloc(2 * sizeof(int));
+        scanf("%d %d", &contests[i][0], &contests[i][1]);
+    }
+
+    int result = luckBalance(k, n, 2, contests);
+    printf("%d\n", result);
+
+    for (int i = 0; i < n; i++) {
+        free(contests[i]);
+    }
+    free(contests);
+
+    return 0;
+}
